@@ -11,6 +11,7 @@ let tasks: {
 
 let mockedRemoveTask: jest.Mock;
 let mockedToggleTaskDone: jest.Mock;
+let mockedEditTask: jest.Mock;
 
 describe('MyTasksList', () => {
 
@@ -35,18 +36,19 @@ describe('MyTasksList', () => {
 
     mockedRemoveTask = jest.fn();
     mockedToggleTaskDone = jest.fn();
+    mockedEditTask = jest.fn();
   });
 
   it('should be able to render all tasks', () => {
-    const { getByText } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} />)
+    const { queryByText } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} editTask={mockedEditTask} />)
     
-    getByText('Primeiro todo');
-    getByText('Segundo todo');
-    getByText('Terceiro todo');
+    queryByText('Primeiro todo');
+    queryByText('Segundo todo');
+    queryByText('Terceiro todo');
   });
 
   it('should be able to handle "removeTask" event', () => {
-    const { getByTestId } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} />)
+    const { getByTestId } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} editTask={mockedEditTask}/>)
     const firstTaskTrashIcon = getByTestId('trash-0');
 
     fireEvent(firstTaskTrashIcon, 'press');
@@ -55,11 +57,21 @@ describe('MyTasksList', () => {
   });
 
   it('should be able to handle "toggleTaskDone" event', () => {    
-    const { getByText } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} />)
-    const secondTask = getByText('Segundo todo');
+    const { getByTestId } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} editTask={mockedEditTask} />)
+    const secondTask = getByTestId('button-1');
 
-    fireEvent.press(secondTask);
+    fireEvent(secondTask, 'press'); 
 
     expect(mockedToggleTaskDone).toHaveBeenCalledWith(tasks[1].id);
+  });
+
+  it('should be able to handle "editTask" event', () => {    
+    const { getByDisplayValue } = render(<TasksList tasks={tasks} removeTask={mockedRemoveTask} toggleTaskDone={mockedToggleTaskDone} editTask={mockedEditTask} />)
+    const inputhirdTask = getByDisplayValue('Terceiro todo');
+
+    fireEvent.changeText(inputhirdTask, 'Novo todo');
+    fireEvent(inputhirdTask, 'submitEditing');
+
+    expect(mockedEditTask).toHaveBeenCalledWith();
   });
 })

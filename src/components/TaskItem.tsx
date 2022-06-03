@@ -103,6 +103,7 @@ export function TaskItem({task, index, toggleTaskDone, removeTask, editTask}: Ta
                 />
 
                 <TouchableOpacity
+                    testID={`trash-${index}`}
                     disabled={editing}
                     onPress={() => removeTask(task.id)}
                 >
